@@ -5,4 +5,4 @@ This file is used to list changes made in each version of the strider-cd cookboo
 
 0.1.0
 -----
-- Michael Goetz - Initial release of strider-cd
+- Michael Goetz - Initial release of the Strider-CD cookbook
