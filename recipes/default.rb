@@ -25,9 +25,42 @@ git "/opt/strider" do
   action :sync
 end
 
+ENV['DB_URI'] = node['strider-cd']['db-uri']
+ENV['SERVER_NAME'] = node['strider-cd']['server-name']
+ENV['PLUGIN_GITHUB_APP_ID'] = node['strider-cd']['plugin-github-app-id']
+ENV['PLUGIN_GITHUB_APP_SECRET'] = node['strider-cd']['plugin-github-app-secret']
+
+if node['strider-cd']['smtp-host']
+  ENV['SMTP_HOST'] = node['strider-cd']['smtp-host']
+  ENV['SMTP_PORT'] = node['strider-cd']['smtp-port']
+  ENV['SMTP_USER'] = node['strider-cd']['smtp-user']
+  ENV['SMTP_PASS'] = node['strider-cd']['smtp-pass']
+  ENV['SMTP_FROM'] = node['strider-cd']['smtp-from']
+else
+  log 'SMTP not configured. Skipping setup'
+end
+
 execute "Install Strider NPM Package" do
   command "npm install"
   cwd "/opt/strider"
   creates "/opt/strider/node_modules"
   action :run
+end
+
+execute "Install Forever Package" do
+  command "npm install forever -g"
+  creates "/usr/local/bin/forever"
+  action :run
+end
+
+execute "Add initial admin user" do
+  command "bin/strider addUser -l #{node['strider-cd']['admin-email']} -p #{node['strider-cd']['admin-password']} -a true"
+  cwd "/opt/strider"
+  only_if "mongo strider-foss --eval 'printjson(db.users.count())' --quiet | grep 0"
+end
+
+execute "Start Strider with Forever" do
+  command "forever start --pidFile /var/run/strider.pid -l /var/log/forever.log -o /var/log/strider-out.log -e /var/log/strider-error.log /opt/strider/bin/strider"
+  cwd "/opt/strider"
+  creates "/var/run/strider.pid"
 end

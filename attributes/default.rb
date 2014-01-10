@@ -1,0 +1,11 @@
+default['strider-cd']['db-uri']                   = 'mongodb://localhost/strider-foss'
+default['strider-cd']['server-name']              = node['fqdn']
+default['strider-cd']['plugin-github-app-id']     = nil
+default['strider-cd']['plugin-github-app-secret'] = nil
+default['strider-cd']['smtp-host']                = nil
+default['strider-cd']['smtp-port']                = 587
+default['strider-cd']['smtp-user']                = nil
+default['strider-cd']['smtp-pass']                = nil
+default['strider-cd']['smtp-from']                = 'Strider <noreply@stridercd.com>'
+default['strider-cd']['admin-email']              = 'admin@stridercd.com'
+default['strider-cd']['admin-password']           = 'password'
